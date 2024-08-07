@@ -1,0 +1,47 @@
+﻿@page "/promotions"
+@using BlazorApp.Shared
+@inject HttpClient Http
+
+<PageTitle>Promotions</PageTitle>
+
+<h1>Promotions</h1>
+
+@if (_promotions is null) {
+    <p>
+        <em>Loading...</em>
+    </p>
+} else if (!_promotions.Any()) {
+    <p>
+        <em>No promotion found.</em>
+    </p>
+} else {
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var promotion in _promotions) {
+            <tr>
+                <td>@promotion.Name</td>
+                <td>@promotion.Description</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IEnumerable<Promotion>? _promotions;
+
+    protected override async Task OnInitializedAsync() {
+        try {
+            _promotions = await Http.GetFromJsonAsync<Promotion[]>("/api/Promotions") ?? [];
+        } catch (Exception ex) {
+            Console.WriteLine(ex.ToString());
+        }
+    }
+
+}

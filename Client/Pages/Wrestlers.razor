@@ -1,0 +1,47 @@
+﻿@page "/wrestlers"
+@using BlazorApp.Shared
+@inject HttpClient Http
+
+<PageTitle>Wrestlers</PageTitle>
+
+<h1>Wrestlers</h1>
+
+@if (_wrestlers is null) {
+    <p>
+        <em>Loading...</em>
+    </p>
+} else if (!_wrestlers.Any()) {
+    <p>
+        <em>No wrestler found.</em>
+    </p>
+} else {
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Date of birth</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var wrestler in _wrestlers) {
+            <tr>
+                <td>@wrestler.Name</td>
+                <td>@wrestler.DateOfBirth.ToShortDateString()</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IEnumerable<Wrestler>? _wrestlers;
+
+    protected override async Task OnInitializedAsync() {
+        try {
+            _wrestlers = await Http.GetFromJsonAsync<Wrestler[]>("/api/Wrestlers") ?? [];
+        } catch (Exception ex) {
+            Console.WriteLine(ex.ToString());
+        }
+    }
+
+}
